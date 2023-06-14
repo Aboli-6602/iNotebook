@@ -1,0 +1,3 @@
+[submodule "inotebook-app"]
+	path = inotebook-app
+	url = https://github.com/Aboli-6602/inotebook-app
