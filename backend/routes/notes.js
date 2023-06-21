@@ -43,13 +43,11 @@ router.post('/addnote', [
         next();
 
     } catch (error) {
-        // res.send(error.message);
         // res.send("Authenticate using a valid token");
         res.send(error.message);
     }
     }, async (req, res) => {
         try {
-
             const errors = validationResult(req);
             
             if (!errors.isEmpty()) {
@@ -69,7 +67,10 @@ router.post('/addnote', [
     }
 )
 
-router.put('/updatenote/:noteID', (req, res, next) => {
+router.put('/updatenote/:noteID', [
+    body('title', 'title should be atleast 5 characters long').isLength({ min: 5 }),
+    body('content', 'content should be atleast 5 characters long').isLength({ min: 5 })
+], (req, res, next) => {
     const token = req.header("auth-token");
     try {
         const data = jwt.verify(token, JWT_SECRET);
@@ -80,10 +81,8 @@ router.put('/updatenote/:noteID', (req, res, next) => {
         res.send("Authenticate using a valid token");
     }
 
-
 }, async (req, res) => {
     const note = await Note.findById(req.params.noteID);
-
     if (req.user.id != note.user) {
         return res.status(401).send("NOT ALLOWED");
     }

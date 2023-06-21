@@ -5,7 +5,7 @@ const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const saltRounds = 5;
 const JWT = require("jsonwebtoken");
-const fetchUser = require("../middleware/fetchUser").default;
+// const fetchUser = require("../middleware/fetchUser").default;
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = "this is a secret.";
 
@@ -20,10 +20,9 @@ router.post('/createuser', [
   body('email', 'enter valid email').isEmail(),
   body('password', 'password should be atleast 5 characters long').isLength({ min: 5 })
 ], (req, res) => {
-  console.log(req.body);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    return res.status(400).json({success:false, error: errors.array() });
   }
 
   bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
@@ -39,10 +38,10 @@ router.post('/createuser', [
           }
         }
         const authToken = JWT.sign(data, JWT_SECRET);
-        res.json({ authToken });
+        res.json({success:true, authToken });
 
       }).catch((err) => {
-        res.send(err);
+        res.json({success:false,error: err});
       })
     }
     else {
@@ -64,21 +63,27 @@ router.post('/login', [
     if (user) {
       bcrypt.compare(password, user.password, (err, result) => {
         if (result) {
-          res.json(user);
+          const data = {
+            user: {
+              id: user._id
+            }
+          }
+          const authToken = JWT.sign(data, JWT_SECRET);
+          res.json({success: true, authToken });
         }
         else {
           console.log(user.password);
           console.log(password);
-          res.send("Enter correct login credentials")
+          res.json({success: false, error: "Enter correct login credentials"})
         }
       });
     }
     else {
-      res.send("Enter correct login credentials")
+      res.json({success: false, error: "Enter correct login credentials"})
     }
   }
   catch {
-    res.send("Internal Server Error");
+    res.json({success: false, error:"Internal Server Error"});
   }
 
 })
