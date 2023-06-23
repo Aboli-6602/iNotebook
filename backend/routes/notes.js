@@ -53,9 +53,9 @@ router.post('/addnote', [
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
-            const { title, content, tag } = req.body;
+            const { title, content, tag, display } = req.body;
             const note = new Note({
-                title, content, tag, user:req.user.id
+                title, content, tag, display, user:req.user.id
             })
             const addedNote = await note.save();
             res.send(addedNote);
@@ -125,13 +125,6 @@ router.delete('/deletenote/:noteID', (req, res, next) => {
         return res.status(404).send("NOT FOUND");
     }
 
-
-    // if(req.body.title){note.title = req.body.title;}
-    // if(req.body.content){note.content = req.body.content;}
-    // if(req.body.tag){note.tag = req.body.tag;}
-
-
-    // note.save();
     await Note.findByIdAndDelete(req.params.noteID);
     res.send("Note Deleted");
 })
