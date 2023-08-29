@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser')
 const cors = require("cors");
 const https = require("https");
+require('dotenv').config();
 
 
 connectToMongo();
@@ -21,11 +22,12 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-const apiKey = "45b3a79c9389f53d71fd12a91e9a3775-us9";
-const listId = "1ff85afe5b";
+const apiKey = process.env.NEWSLETTER_API_KEY;
+//"45b3a79c9389f53d71fd12a91e9a3775-us9";
+const listId = process.env.NEWSLETTER_LIST_ID;
 
 app.post("/newsletter", (req, res)=> {      // from user to our website
-   
+   console.log("reached backend");
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
   const email = req.body.email;
